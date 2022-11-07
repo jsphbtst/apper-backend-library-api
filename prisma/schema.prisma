@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// An author can have many books
+model Author {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  firstName   String
+  lastName    String
+  books       Book[]    @relation("AuthorBook")
+}
+
+// A book belongs to one author
+model Book {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String
+  subtitle    String
+  published   DateTime
+  publisher   String
+  pages       Int
+  description String
+  website     String
+  authorId    Int
+  author      Author    @relation("AuthorBook", fields: [authorId], references: [id])
+  genres      BookGenre[] @relation("BookBookGenre")
+}
+
+model Genre {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String
+  books     BookGenre[]   @relation("GenreBookGenre")
+}
+
+model BookGenre {
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookId    Int
+  book      Book      @relation("BookBookGenre", fields: [bookId], references: [id])
+  genreId   Int
+  genre     Genre     @relation("GenreBookGenre", fields: [genreId], references: [id])
+  @@id([bookId, genreId])
+}
