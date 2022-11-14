@@ -64,8 +64,21 @@ booksRouter.post(
       .notEmpty()
       .isLength({ min: 5 })
       .withMessage(
-        "Book requires `title` and should be minimum 5 characters long"
+        "Book must contain `title` and must be at least 5 characters"
       ),
+    body("subtitle")
+      .notEmpty()
+      .isLength({ min: 5 })
+      .withMessage(
+        "Book must contain `subtitle` and must be at least 5 characters"
+      ),
+    body("pages")
+      .notEmpty()
+      .isNumeric()
+      .withMessage("Book must contain `pages` and must be an integer value"),
+    body("published").notEmpty().withMessage("Book must contain `published`"),
+    body("publisher").notEmpty().withMessage("Book must contain `publisher`"),
+    body("website").notEmpty().withMessage("Book must contain `website`"),
   ],
   async (request, response) => {
     const errors = validationResult(request);
