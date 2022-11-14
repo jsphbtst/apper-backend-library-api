@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
 import pick from "lodash/pick.js";
+import omit from "lodash/omit.js";
 
 const SALT_ROUNDS = 10;
 const authRouter = express.Router();
@@ -67,14 +68,59 @@ authRouter.post(
       data: filteredBody,
     });
 
-    response.send({ data: user, message: user ? "ok" : "error" });
+    const filteredUser = omit(user, ["id", "password"]);
+
+    response.send({ data: filteredUser, message: user ? "ok" : "error" });
   }
 );
 
 // POST /sign-in
-authRouter.post("/sign-in", (request, response) => {
-  response.send({ data: null, message: "ok" });
-});
+authRouter.post(
+  "/sign-in",
+  [
+    body("password")
+      .notEmpty()
+      .isLength({ min: 5 })
+      .withMessage("Sign In requires a valid `password`"),
+    body("email")
+      .notEmpty()
+      .isEmail()
+      .withMessage("Sign In requires a valid `email`"),
+  ],
+  async (request, response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      response.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    const filteredBody = pick(request.body, ["email", "password"]);
+    const user = await request.app.locals.prisma.user.findUnique({
+      where: { email: filteredBody.email },
+    });
+
+    if (!user) {
+      response.status(404).json({ data: null, message: "error not found" });
+      return;
+    }
+
+    const isCorrectPassword = await bcrypt.compare(
+      filteredBody.password,
+      user.password
+    );
+
+    if (!isCorrectPassword) {
+      response
+        .status(401)
+        .json({ data: null, message: "incorrect credentials" });
+      return;
+    }
+
+    const filteredUser = omit(user, ["id", "password"]);
+
+    response.send({ data: filteredUser, message: "ok" });
+  }
+);
 
 // POST /sign-out
 authRouter.post("/sign-out", (request, response) => {
