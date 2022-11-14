@@ -183,7 +183,7 @@ authRouter.post(
       httpOnly: true,
       maxAge: maxAge * 1000,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      // secure: process.env.NODE_ENV === "production" ? true : false,
     });
 
     response.send({ data: filteredUser, message: "ok" });

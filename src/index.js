@@ -13,7 +13,13 @@ dotenv.config();
 const app = express();
 app.use(express.json()); // allows express to parse JSON from a network request
 app.use(cookieParser()); // allows express to read/write cookies
-app.use(cors()); // allows express to read cross-origin requests
+app.use(
+  cors({
+    origin: ["http://localhost:4000", "http://localhost:6969"],
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+  })
+); // allows express to read cross-origin requests
 
 const prisma = new PrismaClient();
 
