@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import { PrismaClient } from "@prisma/client";
 import authRouter from "./routes/auth.js";
 import booksRouter from "./routes/book.js";
@@ -7,6 +8,7 @@ import genresRouter from "./routes/genre.js";
 
 const app = express();
 app.use(express.json()); // allows express to parse JSON from a network request
+app.use(cookieParser()); // allows express to read/write cookies
 
 const prisma = new PrismaClient();
 
