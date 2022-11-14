@@ -192,6 +192,9 @@ authRouter.post(
 
 // POST /sign-out
 authRouter.post("/sign-out", (request, response) => {
+  const cookies = request.cookies;
+  const jwtSession = cookies.sessionId;
+  response.cookie("sessionId", jwtSession, { maxAge: 1 });
   response.send({ data: null, message: "ok" });
 });
 
