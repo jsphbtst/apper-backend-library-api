@@ -4,17 +4,6 @@ import { body, validationResult } from "express-validator";
 
 const booksRouter = express.Router();
 
-/*
-GET     /books
-GET     /books/:bookId
-GET     /books/:bookId/author
-GET     /books/:bookId/genres
-
-POST    /books
-PUT     /books/:bookId
-DELETE  /books/:bookId
-*/
-
 booksRouter.get("/books", async (request, response) => {
   const books = await request.app.locals.prisma.book.findMany();
   response.send({ data: books, message: "ok" });

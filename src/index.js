@@ -1,6 +1,8 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import booksRouter from "./routes/book.js";
+import authorsRouter from "./routes/author.js";
+import genresRouter from "./routes/genre.js";
 
 const app = express();
 app.use(express.json()); // allows express to parse JSON from a network request
@@ -11,7 +13,10 @@ app.locals.prisma = prisma;
 
 const PORT = 4000;
 
+// Two ways of using express.Router
 app.use(booksRouter);
+app.use("/authors", authorsRouter);
+app.use("/genres", genresRouter);
 
 app.get("/", (request, response) => {
   response.send({ message: "hello, world!" });
