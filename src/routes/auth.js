@@ -71,6 +71,28 @@ authRouter.post(
 
     const filteredUser = omit(user, ["id", "password"]);
 
+    const jwtSessionObject = {
+      uid: user.id,
+      email: user.email,
+    };
+
+    const maxAge = 1 * 24 * 60 * 60;
+    const jwtSession = await jwt.sign(
+      jwtSessionObject,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: maxAge, // this jwt will expire in 24 hours
+        // expiresIn requires time in milliseconds
+      }
+    );
+
+    response.cookie("sessionId", jwtSession, {
+      httpOnly: true,
+      maxAge: maxAge * 1000,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+    });
+
     response.send({ data: filteredUser, message: user ? "ok" : "error" });
   }
 );
