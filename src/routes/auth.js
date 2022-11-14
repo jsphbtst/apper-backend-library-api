@@ -9,8 +9,31 @@ const SALT_ROUNDS = 10;
 const authRouter = express.Router();
 
 // GET /me
-authRouter.get("/me", (request, response) => {
-  response.send({ data: null, message: "ok" });
+authRouter.get("/me", async (request, response) => {
+  const cookies = request.cookies;
+  const jwtSession = cookies.sessionId;
+  if (!jwtSession) {
+    response.status(401).send({ data: null, message: "not authenticated" });
+    return;
+  }
+
+  try {
+    const jwtSessionObject = await jwt.verify(
+      jwtSession,
+      process.env.JWT_SECRET
+    );
+    const userId = jwtSessionObject.uid;
+    const user = await request.app.locals.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    const filteredUser = omit(user, ["password", "id"]);
+    response.send({
+      user: filteredUser,
+      message: filteredUser ? "ok" : "error",
+    });
+  } catch {
+    response.status(401).send({ data: null, message: "jwt is not valid" });
+  }
 });
 
 // POST /sign-up
