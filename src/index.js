@@ -1,10 +1,13 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import authRouter from "./routes/auth.js";
 import booksRouter from "./routes/book.js";
 import authorsRouter from "./routes/author.js";
 import genresRouter from "./routes/genre.js";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json()); // allows express to parse JSON from a network request
