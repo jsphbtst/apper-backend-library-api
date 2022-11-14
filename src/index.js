@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
@@ -12,6 +13,7 @@ dotenv.config();
 const app = express();
 app.use(express.json()); // allows express to parse JSON from a network request
 app.use(cookieParser()); // allows express to read/write cookies
+app.use(cors()); // allows express to read cross-origin requests
 
 const prisma = new PrismaClient();
 

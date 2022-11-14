@@ -1,5 +1,6 @@
 import express from "express";
 import pick from "lodash/pick.js";
+import requiresAuth from "../middleware/requiresAuth.js";
 import { body, validationResult } from "express-validator";
 
 const authorsRouter = express.Router("/authors");
@@ -9,7 +10,7 @@ authorsRouter.get("/", async (request, response) => {
   response.send({ data: authors, message: "ok" });
 });
 
-authorsRouter.get("/:authorId", async (request, response) => {
+authorsRouter.get("/:authorId", requiresAuth, async (request, response) => {
   const authorId = request.params.authorId;
   const author = await request.app.locals.prisma.author.findUnique({
     where: {
